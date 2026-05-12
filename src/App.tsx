@@ -9,9 +9,9 @@ export default function App() {
 
  
   return (
-    <div className="min-h-screen">
-      
-      <Toaster />
+    <div className="min-h-screen bg-gradient-to-tr from-gray-400 via-gray-300 to-gray-400">
+
+      <Toaster richColors duration={2000} expand position="bottom-right"/>
 
       <Navbar />
 
