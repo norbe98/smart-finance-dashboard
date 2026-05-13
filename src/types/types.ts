@@ -1,14 +1,27 @@
 export type CreateInventoryProps = {
-    inventory: Inventory[],
-    addProduct: (product: Inventory) => void,
-    addToStock: (selected: string) => void,
-    removeFromStock: (selected: string) => void
+    inventory: Product[],
+    addProduct: (product: Product) => void,
+    addTransaction: (transaction: Transaction) => void,
+    addToStock: (selected: string, quantity: number) => void,
+    removeFromStock: (selected: string, quantity: number) => void,
+    date: string
 }
 
-export type Inventory = {
+export type Product = {
+    id: string,
     name: string,
-    category: string,
     costPrice: number,
-    sellingPrice: number,
+    sellPrice: number,
     stock: number
 }
+
+export type Transaction = {
+    id: string,
+    productId: string,
+    type: "sold" | "bought",
+    quantity: number,
+    date: string
+}
+
+
+

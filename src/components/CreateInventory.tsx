@@ -1,25 +1,62 @@
 import { useState } from "react"
 import { useInventory } from "../context/InventoryContext"
 import { toast } from "sonner"
+import { capitalize } from "../utils/utils"
 
 export default function CreateInventory() {
 
     const [name, setName] = useState<string>("")
-    const [category, setCategory] = useState<string>("")
     const [costPrice, setCostPrice] = useState<number>(0)
     const [sellingPrice, setSellingPrice] = useState<number>(0)
     const [stock, setStock] = useState<number>(0)
 
-    const { addProduct } = useInventory()
+    const { addProduct, addTransaction, date } = useInventory()
+
+    function resetProduct() {
+        setName("")
+        setCostPrice(0)
+        setSellingPrice(0)
+        setStock(0)
+    }
 
     function submitForm() {
+
+        if (!name.trim()) {
+            toast.error("The name cannot be empty!")
+            return
+        }
+
+        if (costPrice <= 0 || sellingPrice <= 0) {
+            toast.error("The prices cannot be 0 or lower!")
+            return
+        }
+
+        if (stock <= 0) {
+            toast.error("The stock cannot be 0 or lower!")
+            return
+        }
+
+        const id = crypto.randomUUID()
+
         addProduct({
-            name: name,
-            category: category,
+            id: id,
+            name: capitalize(name),
             costPrice: costPrice,
-            sellingPrice: sellingPrice,
+            sellPrice: sellingPrice,
             stock: stock
             })
+            
+        addTransaction({
+            id: crypto.randomUUID(),
+            productId: id,
+            type: "bought",
+            quantity: stock,
+            date: date
+        })
+
+        toast.success(`${name} has been successfully added to your inventory!`)
+        resetProduct()
+
     }
 
     return (
@@ -33,11 +70,6 @@ export default function CreateInventory() {
                 <div className="flex w-full gap-2">
                     <label>Name:</label>
                     <input className="bg-white w-full" onChange={(e) => setName(e.target.value)} value={name}/>
-                </div>
-
-                <div className="flex w-full gap-2">
-                    <label>Category:</label>
-                    <input className="bg-white w-full" onChange={(e) => setCategory(e.target.value)} value={category}/>
                 </div>
 
                 <div className="flex w-full gap-2">
@@ -55,7 +87,7 @@ export default function CreateInventory() {
                     <input className="bg-white" onChange={(e) => setStock(Number(e.target.value))} value={stock}/>
                 </div>
 
-                <button onClick={() => toast.success("Item successfully added!")}>Submit</button>
+                <button type="submit">Submit</button>
             </form>
 
         </div>
