@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Transaction, CreateInventoryProps, Product } from "../types/types";
-import { formatDate } from "date-fns";
+import type { CreateInventoryProps, Product } from "../types/types";
+import { seedProducts } from "../utils/seedData";
 
 const inventoryContext = createContext<CreateInventoryProps | null>(null)
 
@@ -8,32 +8,20 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
 
     const [inventory, setInventory] = useState<Product[]>(() => {
         const stored = localStorage.getItem('inventory')
-        return stored ? JSON.parse(stored) : []
+        return stored ? JSON.parse(stored) : seedProducts
     })
 
     useEffect(() => {
         localStorage.setItem('inventory', JSON.stringify(inventory))
     }, [inventory])
-
-    const [transactions, setTransactions] = useState<Transaction[]>(() => {
-        const stored = localStorage.getItem('transactions')
-        return stored ? JSON.parse(stored) : []
-    })
-
-    useEffect(() => {
-    localStorage.setItem('transactions', JSON.stringify(transactions))
-    }, [transactions])
-
-    const rawDate = new Date()
-    const date = formatDate(rawDate, "yyyy.MM.dd.")
     
-
     function addProduct(product: Product) {
         setInventory(prev => [...prev, product])
     }
 
-    function addTransaction(transaction: Transaction) {
-        setTransactions(prev => [...prev, transaction])
+
+    function removeProduct(id: string) {
+        setInventory(prev => prev.filter(product => product.id !== id))
     }
 
     function addToStock(selected: string, quantity: number) {
@@ -41,14 +29,16 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
             {...product, stock: product.stock + quantity} : product 
         ))
     }
+
     function removeFromStock(selected: string, quantity: number) {
         setInventory(prev => prev.map(product => product.id === selected ? 
             {...product, stock: product.stock - quantity} : product 
         ))
     }
+    
 
     return (
-        <inventoryContext.Provider value={{ inventory, addProduct, addTransaction, addToStock, removeFromStock, date }}>
+        <inventoryContext.Provider value={{ inventory, addProduct, removeProduct, addToStock, removeFromStock }}>
         {children}
         </inventoryContext.Provider>
     )
