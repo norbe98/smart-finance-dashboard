@@ -1,10 +1,13 @@
 import { useState } from "react"
 import { useInventory } from "../context/InventoryContext"
 import { toast } from "sonner"
+import { useTransactions } from "../context/TranscationsContext"
 
 export default function ManageSales() {
 
-    const { inventory, addToStock, removeFromStock, addTransaction, date } = useInventory()
+    const { inventory, addToStock, removeFromStock, removeProduct } = useInventory()
+
+    const { addTransaction, date } = useTransactions()
 
     const [selected, setSelected] = useState<string | null>(null)
 
@@ -102,6 +105,7 @@ export default function ManageSales() {
                         setSelected(product.id); 
                         setClicked(true);
                         }}>Make transaction</button>}
+                        <button onClick={() => removeProduct(product.id)}>Remove</button>
                 </div>
                 )}
         </div>

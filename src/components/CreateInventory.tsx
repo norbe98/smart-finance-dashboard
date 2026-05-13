@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useInventory } from "../context/InventoryContext"
 import { toast } from "sonner"
 import { capitalize, isOnlyLetters } from "../utils/utils"
+import { useTransactions } from "../context/TranscationsContext"
 
 export default function CreateInventory() {
 
@@ -10,7 +11,9 @@ export default function CreateInventory() {
     const [sellingPrice, setSellingPrice] = useState<number>(0)
     const [stock, setStock] = useState<number>(0)
 
-    const { addProduct, addTransaction, date } = useInventory()
+    const { addProduct } = useInventory()
+
+    const { addTransaction, date } = useTransactions()
 
     function resetProduct() {
         setName("")

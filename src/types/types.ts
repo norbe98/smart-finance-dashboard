@@ -1,9 +1,14 @@
 export type CreateInventoryProps = {
     inventory: Product[],
     addProduct: (product: Product) => void,
-    addTransaction: (transaction: Transaction) => void,
+    removeProduct: (id: string) => void,
     addToStock: (selected: string, quantity: number) => void,
     removeFromStock: (selected: string, quantity: number) => void,
+}
+
+export type CreateTransactionsProps = {
+    transactions: Transaction[],
+    addTransaction: (transaction: Transaction) => void,
     date: string
 }
 
