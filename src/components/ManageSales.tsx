@@ -61,15 +61,31 @@ export default function ManageSales() {
 
     return (
 
-        <div className="grid grid-cols-2 md:grid-cols-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 w-full h-full p-4 bg-slate-500/50 rounded-2xl gap-3">
                 {inventory.map(product =>
-                <div className="flex flex-col items-center bg-red-300">
+                <div className="flex flex-col items-center justify-center p-2 m-auto bg-red-200 gap-2 rounded-2xl">
+
                     <div className="flex flex-col items-start bg-white gap-3 p-5">
-                    <p>Name: {product.name}</p>
-                    <p>Cost Price: {product.costPrice}</p>
-                    <p>Selling Price: {product.sellPrice}</p>
-                    <p>Stock: {product.stock}</p>
+                        <div className="flex justify-center w-full">
+                        <span>{product.name}</span>
+                        </div>
+
+                        <div className="flex justify-between w-full">
+                        <p>Cost:</p>
+                        <span>{product.costPrice}$</span>
+                        </div>
+
+                        <div className="flex justify-between w-full">
+                        <p>Sell for:</p>
+                        <span>{product.sellPrice}$</span>
+                        </div>
+
+                        <div className="flex justify-between w-full">
+                        <p>Stock:</p>
+                        <span>{product.stock}</span>
+                        </div>
                     </div>
+
                     {clicked && selected === product.id ? 
 
                     <div className="flex flex-col gap-2 w-full">
@@ -82,7 +98,10 @@ export default function ManageSales() {
                         <button onClick={() => setClicked(false)}>Cancel</button>
                     </div>
 
-                    : <button onClick={() => { setSelected(product.id), setClicked(true)}}>Make transaction</button>}
+                    : <button onClick={() => { 
+                        setSelected(product.id); 
+                        setClicked(true);
+                        }}>Make transaction</button>}
                 </div>
                 )}
         </div>

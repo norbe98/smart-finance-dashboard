@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useInventory } from "../context/InventoryContext"
 import { toast } from "sonner"
-import { capitalize } from "../utils/utils"
+import { capitalize, isOnlyLetters } from "../utils/utils"
 
 export default function CreateInventory() {
 
@@ -26,6 +26,12 @@ export default function CreateInventory() {
             return
         }
 
+        if(!isOnlyLetters(name)) {
+            toast.error("This name field can only contain letters!")
+            return
+        }
+        
+
         if (costPrice <= 0 || sellingPrice <= 0) {
             toast.error("The prices cannot be 0 or lower!")
             return
@@ -45,7 +51,7 @@ export default function CreateInventory() {
             sellPrice: sellingPrice,
             stock: stock
             })
-            
+
         addTransaction({
             id: crypto.randomUUID(),
             productId: id,
@@ -61,33 +67,36 @@ export default function CreateInventory() {
 
     return (
 
-        <div className="flex flex-col items-center w-full">
-            <form className="flex flex-col justify-center items-start gap-3 w-100" onSubmit={(e) => {
+        <div className="flex flex-col items-center p-5 bg-slate-500/50 w-full rounded-xl h-60">
+            <form className="flex flex-col justify-center items-start gap-3 w-full" onSubmit={(e) => {
                 e.preventDefault() 
                 submitForm()
                 }}>
 
                 <div className="flex w-full gap-2">
-                    <label>Name:</label>
-                    <input className="bg-white w-full" onChange={(e) => setName(e.target.value)} value={name}/>
+                    <label className="w-28">Name:</label>
+                    <input className="bg-white w-full rounded-xl text-center" onChange={(e) => setName(e.target.value)} value={name}/>
                 </div>
 
                 <div className="flex w-full gap-2">
-                    <label>Cost Price:</label>
-                    <input className="bg-white w-full" onChange={(e) => setCostPrice(Number(e.target.value))} value={costPrice}/>
+                    <label className="w-28">Cost: ($)</label>
+                    <input className="bg-white w-full rounded-xl text-center" onChange={(e) => setCostPrice(Number(e.target.value))} value={costPrice}/>
                 </div>
 
-                <div>
-                    <label>Selling Price:</label>
-                    <input className="bg-white" onChange={(e) => setSellingPrice(Number(e.target.value))} value={sellingPrice}/>
+                <div className="flex w-full gap-2">
+                    <label className="w-28">Sell for: ($)</label>
+                    <input className="bg-white w-full rounded-xl text-center" onChange={(e) => setSellingPrice(Number(e.target.value))} value={sellingPrice}/>
                 </div>
 
-                <div>
-                    <label>Stock:</label>
-                    <input className="bg-white" onChange={(e) => setStock(Number(e.target.value))} value={stock}/>
+                <div className="flex w-full gap-2">
+                    <label className="w-28">Stock:</label>
+                    <input className="bg-white w-full rounded-xl text-center" onChange={(e) => setStock(Number(e.target.value))} value={stock}/>
                 </div>
 
-                <button type="submit">Submit</button>
+                <div className="flex w-full justify-end">
+                <button className="bg-slate-500 rounded-xl p-2 hover:bg-slate-600" type="submit">Submit</button>
+                </div>
+
             </form>
 
         </div>
