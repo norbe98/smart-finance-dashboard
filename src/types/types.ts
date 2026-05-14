@@ -28,5 +28,24 @@ export type Transaction = {
     date: string
 }
 
+export type ProductCardProps = {
+    product: Product,
+    selected: string | null,
+    changeSelected: (selected: string | null) => void,
+    quantity: number,
+    changeQuantity: (number: number) => void,
+    handleBuy: (id: string, quantity: number) => void,
+    handleSell: (id: string, quantity: number) => void
+}
+
+export type ProductGridProps = {
+    selected: string | null,
+    changeSelected: (selected: string | null) => void,
+    quantity: number,
+    changeQuantity:(number: number) => void,
+    handleBuy: (id: string, quantity: number) => void,
+    handleSell: (id: string, quantity: number) => void,
+}
+
 
 

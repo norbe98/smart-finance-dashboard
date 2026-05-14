@@ -1,5 +1,5 @@
-import CreateInventory from "../components/CreateInventory";
-import ManageSales from "../components/ManageSales";
+import CreateInventory from "../components/inventory/CreateForm";
+import ManageSales from "../components/inventory/ManageTransaction";
 
 export default function Inventory() {
 
