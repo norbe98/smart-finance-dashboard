@@ -6,12 +6,10 @@ import ProductGrid from "./ProductGrid"
 
 export default function ManageSales() {
 
-    const { addToStock, removeFromStock } = useInventory()
-
+    const { inventory, addToStock, removeFromStock } = useInventory()
     const { addTransaction, date } = useTransactions()
 
     const [selected, setSelected] = useState<string | null>(null)
-
     const [quantity, setQuantity] = useState<number>(0)
 
     function changeSelected(selected: string | null) {
@@ -23,16 +21,13 @@ export default function ManageSales() {
     }
 
     function handleBuy(id: string, quantity: number) {
-        
         if (quantity <= 0) {
-            toast.error("Quantity cannot be 0 or lower!")
+            toast.error("Quantity must be greater than 0!")
             return
         }
 
         addToStock(id, quantity)
-
-        toast.success(`Successfully bought ${quantity} more!`)
-
+        
         addTransaction({
             id: crypto.randomUUID(),
             productId: id,
@@ -40,22 +35,26 @@ export default function ManageSales() {
             quantity: quantity,
             date: date
         })
-
-
+        
+        toast.success(`Restocked ${quantity} units successfully!`)
         setSelected(null)
         setQuantity(0)
     }
 
     function handleSell(id: string, quantity: number) {
-        removeFromStock(id, quantity)
-
         if (quantity <= 0) {
-            toast.error("Quantity cannot be 0 or lower!")
+            toast.error("Quantity must be greater than 0!")
             return
         }
 
-        toast.success(`Successfully sold ${quantity}!`)
-
+        const product = inventory.find(p => p.id === id)
+        if (product && product.stock < quantity) {
+            toast.error(`Not enough stock! (Current: ${product.stock})`)
+            return
+        }
+        
+        removeFromStock(id, quantity)
+        
         addTransaction({
             id: crypto.randomUUID(),
             productId: id,
@@ -63,14 +62,19 @@ export default function ManageSales() {
             quantity: quantity,
             date: date
         })
-
+        
+        toast.success(`Sold ${quantity} units successfully!`)
         setSelected(null)
         setQuantity(0)
     }
 
     return (
-
-        <ProductGrid selected={selected} changeSelected={changeSelected} quantity={quantity}  changeQuantity={changeQuantity} handleBuy={handleBuy} handleSell={handleSell}  />
-
+        <ProductGrid 
+        selected={selected} 
+        changeSelected={changeSelected} 
+        quantity={quantity}  
+        changeQuantity={changeQuantity} 
+        handleBuy={handleBuy} 
+        handleSell={handleSell} />
     )
 }

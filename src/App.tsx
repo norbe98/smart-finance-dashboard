@@ -15,11 +15,13 @@ export default function App() {
 
       <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/display" element={<Display />} />
-        <Route path="/inventory" element={<Inventory />} />
-      </Routes>
+      <main className="max-w-screen-2xl mx-auto p-4 md:p-12 animate-in fade-in duration-500">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/display" element={<Display />} />
+          <Route path="/inventory" element={<Inventory />} />
+        </Routes>
+      </main>
 
     </div>
   )

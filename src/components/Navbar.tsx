@@ -1,36 +1,68 @@
-import { SquareMenu } from "lucide-react";
+import { SquareMenu, LayoutDashboard, Package, Home, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar() {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const location = useLocation();
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
+    function isActive(path: string) {
+        return location.pathname === path
+    }
 
     return (
-        <nav className="p-2 bg-slate-400">
+        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+            <div className="max-w-screen-2xl mx-auto px-4 md:px-12">
+                <div className="flex justify-between items-center h-16">
+                    
+                    <Link to="/" className="flex items-center gap-2 font-bold text-xl text-slate-800">
+                        <div className="bg-indigo-600 p-1.5 rounded-lg">
+                            <Home size={20} className="text-white" />
+                        </div>
+                        <span>Inventio</span>
+                    </Link>
 
-            <div className="flex justify-between">
+                    <div className="hidden md:flex items-center gap-1">
+                        <Link 
+                            to="/display" 
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/display') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
+                            <LayoutDashboard size={18} />
+                            <span className="font-medium">Display</span>
+                        </Link>
+                        <Link 
+                            to="/inventory" 
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/inventory') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
+                            <Package size={18} />
+                            <span className="font-medium">Inventory</span>
+                        </Link>
+                    </div>
 
-                <Link to="/">Home</Link>
-
-                <div className="hidden md:flex gap-3 px-3">
-                    <Link to="/display">Display</Link>
-                    <Link to="/inventory">Inventory</Link>
+                    <button 
+                        onClick={() => setIsOpen(prev => !prev)} 
+                        className="p-2 rounded-lg md:hidden text-slate-600 hover:bg-slate-100 transition-colors">
+                        {isOpen ? <X size={24} /> : <SquareMenu size={24} />}
+                    </button>
                 </div>
-
-                <button onClick={() => setIsOpen(prev => !prev)} className="flex md:hidden">
-                    <SquareMenu />
-                </button>
-
             </div>
 
-                {isOpen && 
-                <div className="md:hidden flex flex-col">
-                    <Link to="/display" className="text-center">Display</Link>
-                    <Link to="/inventory" className="text-center">Inventory</Link>
+            {isOpen && (
+                <div className="md:hidden border-t border-slate-100 bg-white p-4 space-y-2 animate-in slide-in-from-top duration-300">
+                    <Link 
+                        onClick={() => setIsOpen(false)}
+                        to="/display" 
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700">
+                        <LayoutDashboard size={20} />
+                        Display
+                    </Link>
+                    <Link 
+                        onClick={() => setIsOpen(false)}
+                        to="/inventory" 
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700">
+                        <Package size={20} />
+                        Inventory
+                    </Link>
                 </div>
-                }
-
+            )}
         </nav>
-    )
+    );
 }
