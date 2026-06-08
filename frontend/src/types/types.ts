@@ -89,3 +89,17 @@ export type StockChartProps = {
     stockData: StockData[],
     COLORS: string[],
 }
+
+export type AuthContext = {
+
+}
+
+export type AuthUser = {
+    email: string,
+    password: string
+}
+
+export type User = {
+    id: number,
+    email: string
+}
