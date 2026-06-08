@@ -92,7 +92,9 @@ export type StockChartProps = {
 
 export type AuthContext = {
     user: User | null,
-    signUp: (data: AuthUser) => Promise<string>
+    signUp: (data: AuthUser) => Promise<string>,
+    signIn: (data: AuthUser) => Promise<void>,
+    error: string
 }
 
 export type AuthUser = {

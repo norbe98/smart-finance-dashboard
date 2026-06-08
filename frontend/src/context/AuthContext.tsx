@@ -21,12 +21,36 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
         return email
     }
 
+    async function signIn(data: AuthUser) {
+                const res = await fetch("/api/auth/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            const user = await res.json()
+
+            if(res.status === 401) return setError("The email is not existing")
+
+            if(res.status === 402) return setError("The passowrd is not correct")
+
+            if(res.status === 200) {
+                localStorage.setItem("token", user.token)
+            }
+    }
+
+    async function logOut() {
+
+    }
+
     return (
-        <AuthContext.Provider value={{ user, signUp }}>
+        <AuthContext.Provider value={{ user, signUp, signIn, error }}>
             {children}
         </AuthContext.Provider>
     )
 }
+
 
 export function useAuth() {
     const ctx = useContext(AuthContext)
