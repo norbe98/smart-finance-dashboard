@@ -91,7 +91,8 @@ export type StockChartProps = {
 }
 
 export type AuthContext = {
-
+    user: User | null,
+    signUp: (data: AuthUser) => Promise<string>
 }
 
 export type AuthUser = {
