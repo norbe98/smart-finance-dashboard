@@ -2,8 +2,14 @@ import express, { type Request, type Response } from 'express'
 import { prisma } from '../prisma.js'
 import bcrypt from 'bcrypt'
 import  jwt  from 'jsonwebtoken'
+import authMiddleware from '../middleware/auth.middleware.js'
+import type { AuthRequest } from '../types/types.js'
 
 export const authRouter = express.Router()
+
+authRouter.get("/me", authMiddleware, async (req: AuthRequest, res: Response) => {
+    res.json(req.user)
+})
 
 
 authRouter.post("/signup", async (req: Request, res: Response) => {
@@ -42,7 +48,7 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
 
     const isPasswordValid = await bcrypt.compare(password, existingUser.password)
 
-    if(!isPasswordValid) return res.status(402).json({ message: "Password is not correct!"})
+    if(!isPasswordValid) return res.status(401).json({ message: "Password is not correct!"})
 
     const token = jwt.sign({
             id: existingUser.id,
@@ -56,8 +62,10 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
 
     res.status(200).json({
         token,
-        id: existingUser.id,
-        email: existingUser.email
+        userData: {
+            id: existingUser.id,
+            email: existingUser.email
+        }
     })
 
 })
