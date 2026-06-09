@@ -2,35 +2,72 @@ import { useState } from "react"
 import { useAuth } from "../context/AuthContext"
 
 export default function SignInPage() {
+  const [email, setEmail] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const { signIn, message } = useAuth()
 
-    const [email, setEmail] = useState<string>("")
-    const [password, setPassword] = useState<string>("")
-    const { signIn, error } = useAuth()
+  async function handleSignUp() {
+    await signIn({ email, password })
+  }
 
-    async function handleSignIn() {
-        try {
-            await signIn({email, password})
-        } catch (error) {
-            alert(error)
-        }
-    }
+  return (
+    <div className="mt-4 md:mt-1 flex items-center justify-center px-4">
+      <form
+        className="w-full max-w-md bg-white rounded-2xl shadow-lg border p-8"
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleSignUp()
+        }}
+      >
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">
+          Sign In
+        </h1>
 
-    return (
-        <div>
-            <form onSubmit={(e) => {
-                e.preventDefault()
-                handleSignIn()
-            }}>
-                <label>Email:
-                    <input value={email} type="email" onChange={(e) => setEmail(e.target.value)}/>
-                </label>
-                <label>Password:
-                    <input value={password} type="password" onChange={(e) => setPassword(e.target.value)}/>
-                </label>
-                <button>Sign In</button>
-            </form>
+        <p className="text-slate-500 mb-6">
+          Sign in to start using your dashboard.
+        </p>
 
-            {error && <>{error}</>}
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block mb-1 text-sm font-medium text-slate-700">
+              Email
+            </label>
+            <input
+              className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-slate-400"
+              value={email}
+              type="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium text-slate-700">
+              Password
+            </label>
+            <input
+              className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-slate-400"
+              value={password}
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button className="mt-2 bg-slate-800 text-white py-2 rounded-lg cursor-pointer hover:bg-slate-700 transition">
+            Sign In
+          </button>
         </div>
-    )
+
+
+        {message === "You registered successfully, now you can login." ? 
+          <p className="mt-4 text-sm text-green-600">
+            {message}
+          </p>
+          :
+          <p className="mt-4 text-sm text-red-600">
+            {message}
+          </p>
+        }
+      </form>
+    </div>
+  )
 }

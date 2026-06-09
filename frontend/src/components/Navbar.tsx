@@ -1,10 +1,13 @@
-import { SquareMenu, LayoutDashboard, Package, Home, X } from "lucide-react";
+import { SquareMenu, LayoutDashboard, Package, Home, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const location = useLocation();
+
+    const { user, logOut } = useAuth()
 
     function isActive(path: string) {
         return location.pathname === path
@@ -37,6 +40,21 @@ export default function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-1">
+                        {user ? 
+                        <>
+                        <div
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors`}>
+                            <span className="font-medium">{user.email}</span>
+                        </div>
+
+                        <div 
+                            onClick={logOut}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors cursor-pointer`}>
+                            <span className="font-medium">Logout</span>
+                        </div>
+                        </>
+                        : 
+                        <>
                         <Link 
                             to="/signup" 
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/signup') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
@@ -47,11 +65,8 @@ export default function Navbar() {
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/signin') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
                             <span className="font-medium">Sign In</span>
                         </Link>
-                        <Link 
-                            to="/" 
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors`}>
-                            <span className="font-medium">Logout</span>
-                        </Link>
+                        </>
+                        }
                     </div>
 
                     <button 
@@ -64,18 +79,34 @@ export default function Navbar() {
 
             {isOpen && (
                 <div className="md:hidden border-t border-slate-100 bg-white p-4 space-y-2 animate-in slide-in-from-top duration-300">
+                    {user ? 
+                    <>
+                    <div
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors`}>
+                        <span className="font-medium">{user.email}</span>
+                    </div>
+
+                    <div 
+                        onClick={logOut}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors cursor-pointer`}>
+                        <span className="font-medium">Logout</span>
+                    </div>
+                    </>
+                    : 
+                    <>
                     <Link 
-                        onClick={() => setIsOpen(false)}
                         to="/signup" 
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700">
-                        Sign Up
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/signup') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
+                        <span className="font-medium">Sign Up</span>
                     </Link>
                     <Link 
-                        onClick={() => setIsOpen(false)}
                         to="/signin" 
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700">
-                        Sign In
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isActive('/signin') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
+                        <span className="font-medium">Sign In</span>
                     </Link>
+                    </>
+                    }
+                    
                     <Link 
                         onClick={() => setIsOpen(false)}
                         to="/display" 

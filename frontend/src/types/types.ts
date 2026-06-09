@@ -94,7 +94,8 @@ export type AuthContext = {
     user: User | null,
     signUp: (data: AuthUser) => Promise<string>,
     signIn: (data: AuthUser) => Promise<void>,
-    error: string
+    message: string,
+    logOut: () => void
 }
 
 export type AuthUser = {
