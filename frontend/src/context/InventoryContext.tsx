@@ -1,44 +1,82 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { CreateInventoryProps, Product } from "../types/types";
-import { seedProducts } from "../utils/seedData";
+import type { CreateProduct, InventoryContext, Product } from "../types/types";
+import { useAuth } from "./AuthContext";
 
-const inventoryContext = createContext<CreateInventoryProps | null>(null)
+
+const inventoryContext = createContext<InventoryContext | null>(null)
 
 export default function InventoryProvider( {children}: {children: React.ReactNode}) {
 
-    const [inventory, setInventory] = useState<Product[]>(() => {
-        const stored = localStorage.getItem('inventory')
-        return stored ? JSON.parse(stored) : seedProducts
-    })
+    const [inventory, setInventory] = useState<Product[]>([])
+    const { user } = useAuth()
+    
+    async function loadInventory() {
+        const token = localStorage.getItem("token")
+        const res = await fetch("/api/inventory", {
+            method: "GET",
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+        const data = await res.json()
+        setInventory(data)
+    }
 
     useEffect(() => {
-        localStorage.setItem('inventory', JSON.stringify(inventory))
-    }, [inventory])
-    
-    function addProduct(product: Product) {
+        if(!user) return
+
+        loadInventory()
+    }, [user])
+
+    async function handleTransaction(productId: number, type: string, quantity: number) {
+        const token = localStorage.getItem("token")
+        const res = await fetch(`/api/transaction/product/${productId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({type, quantity})
+        })
+        const updatedProduct = await res.json()
+        console.log(updatedProduct);
+        
+        setInventory(prev => prev.map(product => updatedProduct.id === product.id ? updatedProduct : product))
+    }
+
+    async function createSQLProduct(data: CreateProduct) {
+        const token = localStorage.getItem("token")
+        const res = await fetch("/api/product", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+
+        if(res.status === 404) return console.log("nem vagyok belépve");
+        
+        const product = await res.json()
         setInventory(prev => [...prev, product])
     }
 
-
-    function removeProduct(id: string) {
-        setInventory(prev => prev.filter(product => product.id !== id))
-    }
-
-    function addToStock(selected: string, quantity: number) {
-        setInventory(prev => prev.map(product => product.id === selected ? 
-            {...product, stock: product.stock + quantity} : product 
-        ))
-    }
-
-    function removeFromStock(selected: string, quantity: number) {
-        setInventory(prev => prev.map(product => product.id === selected ? 
-            {...product, stock: product.stock - quantity} : product 
-        ))
+    async function removeProduct(productId: number) {
+        const token = localStorage.getItem("token")
+        const res = await fetch(`/api/product/${productId}`, {
+            method: "DELETE",
+            headers: {
+                authorization: `Bearer ${token}`
+            },
+        })
+        if(res.status === 200) {
+            setInventory(prev => prev.filter(product => product.id !== productId))
+        }
     }
     
 
     return (
-        <inventoryContext.Provider value={{ inventory, addProduct, removeProduct, addToStock, removeFromStock }}>
+        <inventoryContext.Provider value={{ inventory, handleTransaction, createSQLProduct, removeProduct }}>
         {children}
         </inventoryContext.Provider>
     )
