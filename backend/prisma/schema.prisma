@@ -11,5 +11,26 @@ model User {
   id Int @id @default(autoincrement())
   email String @unique
   password String
+  products Product[]
   createdAt DateTime @default(now())
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  costPrice Int
+  sellPrice Int
+  stock Int
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+    id Int @id @default(autoincrement())
+    productId Int
+    product Product @relation(fields: [productId], references: [id])
+    type String
+    quantity Int
+    date DateTime @default(now())
 }

@@ -20,8 +20,5 @@ export default function authMiddleware(
 
     req.user = decode
 
-    console.log(decode);
-    
-    
-    res.status(200).json(decode)
+    next()
 }

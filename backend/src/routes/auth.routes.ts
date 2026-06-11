@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import  jwt  from 'jsonwebtoken'
 import authMiddleware from '../middleware/auth.middleware.js'
 import type { AuthRequest } from '../types/types.js'
-
+import { createDemoData } from '../utils/helper.js'
 export const authRouter = express.Router()
 
 authRouter.get("/me", authMiddleware, async (req: AuthRequest, res: Response) => {
@@ -31,6 +31,8 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
             password: hashedPassword
         }
     })
+
+    await createDemoData(newUser.id)
 
     res.status(201).json(newUser.email)
 })
