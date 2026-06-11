@@ -4,7 +4,6 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import InventoryProvider from './context/InventoryContext.tsx'
-import TransactionsProvider from './context/TranscationsContext.tsx'
 import AuthProvider from './context/AuthContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
@@ -12,9 +11,7 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <AuthProvider>
         <InventoryProvider>
-          <TransactionsProvider>
             <App />
-          </TransactionsProvider>
         </InventoryProvider>
       </AuthProvider>
     </BrowserRouter>

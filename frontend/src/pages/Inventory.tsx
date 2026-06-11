@@ -1,6 +1,6 @@
 import { PackagePlus, ClipboardList } from "lucide-react";
-import CreateInventory from "../components/inventory/CreateForm";
-import ManageSales from "../components/inventory/ManageTransaction";
+import CreateForm from "../components/inventory/CreateForm";
+import ManageSales from "../components/inventory/ManageSales";
 
 export default function Inventory() {
     return (
@@ -20,7 +20,7 @@ export default function Inventory() {
                             <PackagePlus size={20} className="text-indigo-500" />
                             <h2 className="font-semibold text-slate-700">Add New Product</h2>
                         </div>
-                        <CreateInventory />
+                        <CreateForm />
                     </div>
                 </aside>
 

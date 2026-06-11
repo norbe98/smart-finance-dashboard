@@ -1,77 +1,27 @@
 import { useState } from "react"
-import { useInventory } from "../../context/InventoryContext"
-import { toast } from "sonner"
-import { capitalize, isOnlyLetters } from "../../utils/utils"
-import { useTransactions } from "../../context/TranscationsContext"
 import { PlusCircle, Tag, DollarSign, Package, ShoppingCart } from "lucide-react"
+import type { CreateProduct } from "../../types/types"
+import { useInventory } from "../../context/InventoryContext"
 
-export default function CreateInventory() {
+export default function CreateForm() {
     const [name, setName] = useState<string>("")
     const [costPrice, setCostPrice] = useState<number>(0)
     const [sellingPrice, setSellingPrice] = useState<number>(0)
     const [stock, setStock] = useState<number>(0)
 
-    const { inventory, addProduct } = useInventory()
-    const { addTransaction, date } = useTransactions()
-
-    function resetProduct() {
-        setName("")
-        setCostPrice(0)
-        setSellingPrice(0)
-        setStock(0)
+    const { createSQLProduct } = useInventory()
+    
+    function handleSubmit () {
+        createSQLProduct({name, costPrice, sellingPrice, stock})
     }
 
-    function submitForm() {
-        if (!name.trim()) {
-            toast.error("The name cannot be empty!")
-            return
-        }
-        if(!isOnlyLetters(name)) {
-            toast.error("This name field can only contain letters!")
-            return
-        }
-        const exist = inventory.some(pr => pr.name.toLowerCase() === name.toLowerCase())
-        if (exist) {
-            toast.error("asdasd")
-            return
-        }
-        if (costPrice <= 0 || sellingPrice <= 0) {
-            toast.error("The prices cannot be 0 or lower!")
-            return
-        }
-        if (stock <= 0) {
-            toast.error("The stock cannot be 0 or lower!")
-            return
-        }
-
-        const id = crypto.randomUUID()
-
-        addProduct({
-            id: id,
-            name: capitalize(name),
-            costPrice: costPrice,
-            sellPrice: sellingPrice,
-            stock: stock
-        })
-
-        addTransaction({
-            id: crypto.randomUUID(),
-            productId: id,
-            type: "bought",
-            quantity: stock,
-            date: date
-        })
-
-        toast.success(`${capitalize(name)} added successfully!`)
-        resetProduct()
-    }
 
     return (
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
             <form className="space-y-4" 
                 onSubmit={(e) => {
                     e.preventDefault() 
-                    submitForm()
+                    handleSubmit()
                 }}>
                     
                 <div className="space-y-2">

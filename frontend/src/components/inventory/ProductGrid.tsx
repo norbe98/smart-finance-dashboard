@@ -1,9 +1,9 @@
 import { PackageSearch } from "lucide-react"
 import { useInventory } from "../../context/InventoryContext"
-import type { ProductGridProps } from "../../types/types"
 import ProductCard from "./ProductCard"
+import type { ProductGripProps } from "../../types/types"
 
-export default function ProductGrid({ selected, changeSelected, quantity, changeQuantity, handleBuy, handleSell }: ProductGridProps) {
+export default function ProductGrid({ selected, changeSelected, quantity, changeQuantity, handleBuy, handleSell }: ProductGripProps) {
     const { inventory } = useInventory()
 
     if (inventory.length === 0) {
@@ -18,17 +18,18 @@ export default function ProductGrid({ selected, changeSelected, quantity, change
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {inventory.map(product => (
+            {inventory.map(product =>
                 <ProductCard 
                     key={product.id} 
-                    product={product} 
-                    selected={selected} 
-                    changeSelected={changeSelected} 
-                    quantity={quantity} 
-                    changeQuantity={changeQuantity} 
-                    handleBuy={handleBuy} 
-                    handleSell={handleSell}/>
-            ))}
+                    product={product}
+                    selected={selected}
+                    changeSelected={changeSelected}
+                    quantity={quantity}
+                    changeQuantity={changeQuantity}
+                    handleBuy={handleBuy}
+                    handleSell={handleSell}
+                     />
+            )}
         </div>
     )
 }

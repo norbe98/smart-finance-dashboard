@@ -3,8 +3,9 @@ import type { ProductCardProps } from "../../types/types";
 import { Trash2, Plus, Minus, X, ArrowRightLeft, DollarSign, Package } from "lucide-react";
 
 export default function ProductCard({ product, selected, changeSelected, quantity, changeQuantity, handleBuy, handleSell }: ProductCardProps) {
-    const { removeProduct } = useInventory();
     const isSelected = selected === product.id;
+
+    const { removeProduct } = useInventory()
 
     return (
         <div className={`flex flex-col p-5 rounded-2xl m-2 md:m-1 border transition-all duration-300 ${

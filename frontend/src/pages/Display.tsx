@@ -1,4 +1,3 @@
-import { useTransactions } from "../context/TranscationsContext"
 import { useInventory } from "../context/InventoryContext"
 import KpiGrid from "../components/dashboard/KpiGrid";
 import IncomeChart from "../components/dashboard/IncomeChart";
@@ -8,16 +7,23 @@ import StockChart from "../components/dashboard/StockChart";
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function Display() {
-    const { transactions } = useTransactions()
     const { inventory } = useInventory()
 
-    const boughtTransactions = transactions.filter(tr => tr.type === "bought")
+     const boughtTransactions = inventory.flatMap(product => {
+        const transactions = product.transactions.filter(tr => tr.type === "bought")
+        return transactions
+    })
+
     const spent = boughtTransactions.reduce((acc, tr) => {
         const product = inventory.find(p => p.id === tr.productId);
         return product ? acc + (product.costPrice * tr.quantity) : acc;
     }, 0)
     
-    const soldTransactions = transactions.filter(tr => tr.type === "sold")
+    const soldTransactions = inventory.flatMap(product => {
+        const transactions = product.transactions.filter(tr => tr.type === "sold")
+        return transactions
+    })
+
     const income = soldTransactions.reduce((acc, tr) => {
         const product = inventory.find(p => p.id === tr.productId);
         return product ? acc + (product.sellPrice * tr.quantity) : acc;
@@ -35,12 +41,15 @@ export default function Display() {
         return acc;
     }, 0)
 
+    const transactions = inventory.flatMap(product => product.transactions)
+
     const chartData = transactions.reduce((acc, tr) => {
         const product = inventory.find(p => p.id === tr.productId);
         if (!product) return acc;
 
-        console.log(acc);
-        const existingDay = acc.find(d => d.date === tr.date);
+        const date = new Date(tr.date).toLocaleDateString("hu-HU")
+        
+        const existingDay = acc.find(d => d.date === date)
 
         const amount = tr.type === 'bought'
             ? product.costPrice * tr.quantity
@@ -51,7 +60,7 @@ export default function Display() {
             else existingDay.income += amount;
         } else {
             acc.push({
-                date: tr.date,
+                date: date,
                 income: tr.type === 'sold' ? amount : 0,
                 spent: tr.type === 'bought' ? amount : 0,
             });
