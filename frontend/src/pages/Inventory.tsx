@@ -3,6 +3,7 @@ import CreateForm from "../components/inventory/CreateForm";
 import ManageSales from "../components/inventory/ManageSales";
 
 export default function Inventory() {
+
     return (
         <div className="space-y-6">
             <header>

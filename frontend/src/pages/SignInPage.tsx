@@ -1,13 +1,27 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 
 export default function SignInPage() {
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const { signIn, message } = useAuth()
+  const { signIn, message, changeMessage, loading, changeLoading } = useAuth()
 
-  async function handleSignUp() {
-    await signIn({ email, password })
+  useEffect(() => {
+    changeMessage("")
+  }, [])
+
+  async function handleSignIn() {
+    changeLoading(true)
+    try {
+      const user = await signIn({ email, password })
+      changeMessage(user.message)
+    } catch (error) {
+      if(error instanceof Error) {
+        changeMessage(error.message)
+      }
+    } finally {
+      changeLoading(false)
+    }
   }
 
   return (
@@ -16,7 +30,7 @@ export default function SignInPage() {
         className="w-full max-w-md bg-white rounded-2xl shadow-lg border p-8"
         onSubmit={(e) => {
           e.preventDefault()
-          handleSignUp()
+          handleSignIn()
         }}
       >
         <h1 className="text-3xl font-bold text-slate-800 mb-2">
@@ -52,8 +66,15 @@ export default function SignInPage() {
             />
           </div>
 
-          <button className="mt-2 bg-slate-800 text-white py-2 rounded-lg cursor-pointer hover:bg-slate-700 transition">
-            Sign In
+          <button className="flex justify-center mt-2 bg-slate-800 text-white py-2 rounded-lg cursor-pointer hover:bg-slate-700 transition" disabled={loading}>
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Signing in...</span>
+            </div>
+          ) : (
+            "Sign In"
+          )}
           </button>
         </div>
 

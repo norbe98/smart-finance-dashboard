@@ -1,13 +1,27 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const { signUp, message } = useAuth()
+  const { signUp, message, changeMessage, loading, changeLoading } = useAuth()
+
+    useEffect(() => {
+      changeMessage("")
+    }, [])
 
   async function handleSignUp() {
-    await signUp({ email, password })
+    changeLoading(true)
+    try {
+      const content = await signUp({ email, password })
+      changeMessage(content.message)
+    } catch (error) {
+      if (error instanceof Error) {
+      changeMessage(error.message)
+      }
+    } finally {
+      changeLoading(false)
+    }
   }
 
   return (
@@ -52,13 +66,20 @@ export default function SignUpPage() {
             />
           </div>
 
-          <button className="mt-2 bg-slate-800 text-white py-2 rounded-lg cursor-pointer hover:bg-slate-700 transition">
-            Register
+          <button className="flex justify-center mt-2 bg-slate-800 text-white py-2 rounded-lg cursor-pointer hover:bg-slate-700 transition" disabled={loading}>
+          {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Signing un...</span>
+              </div>
+            ) : (
+              "Sign Up"
+          )}
           </button>
         </div>
 
 
-        {message === "You registered successfully, now you can login." ? 
+        {message === "You registered successfully!" ? 
           <p className="mt-4 text-sm text-green-600">
             {message}
           </p>
