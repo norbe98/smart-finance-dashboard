@@ -43,10 +43,13 @@ export type StockChartProps = {
 
 export type AuthContext = {
     user: User | null,
-    signUp: (data: AuthUser) => Promise<string>,
-    signIn: (data: AuthUser) => Promise<void>,
+    signUp: (data: AuthUser) => Promise<any>,
+    signIn: (data: AuthUser) => Promise<any>,
     message: string,
-    logOut: () => void
+    logOut: () => void,
+    changeMessage: (message: string) => void,
+    loading: boolean,
+    changeLoading: (boolean: boolean) => void
 }
 
 export type AuthUser = {
@@ -60,7 +63,7 @@ export type User = {
 }
 
 export type CreateProduct = {
-    name: string,
+    nameResult: string,
     costPrice: number,
     sellingPrice: number,
     stock: number
@@ -90,7 +93,7 @@ export type Product = {
 export type InventoryContext = {
     inventory: Product[],
     handleTransaction: (productId: number, type: string, quantity: number) => Promise<void>,
-    createSQLProduct: (data: CreateProduct) => Promise<void>,
+    createSQLProduct: (data: CreateProduct) => Promise<any>,
     removeProduct: (productId: number) => void
 }
 

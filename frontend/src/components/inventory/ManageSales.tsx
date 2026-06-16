@@ -1,8 +1,7 @@
 import { useState } from "react"
-import { toast } from "sonner"
 import ProductGrid from "./ProductGrid"
-import { useAuth } from "../../context/AuthContext"
 import { useInventory } from "../../context/InventoryContext"
+import { toast } from "sonner"
 
 export default function ManageSales() {
 
@@ -18,14 +17,26 @@ export default function ManageSales() {
         setQuantity(quantity)
     }
 
-    function handleBuy(productId: number, quantity: number) {
-        handleTransaction(productId, "bought", quantity)
-        setSelected(null)
+    async function handleBuy(productId: number, quantity: number) {
+        try {
+            await handleTransaction(productId, "bought", quantity)
+            setSelected(null)
+        } catch (error) {
+            if(error instanceof Error) {
+                toast.error(error.message)
+            }
+        }
     }
 
-    function handleSell(productId: number, quantity: number) {
-        handleTransaction(productId, "sold", quantity)
-        setSelected(null)
+    async function handleSell(productId: number, quantity: number) {
+        try {
+            await handleTransaction(productId, "sold", quantity)
+            setSelected(null)
+        } catch (error) {
+            if(error instanceof Error) {
+                toast.error(error.message)
+            }
+        }
     }
 
 

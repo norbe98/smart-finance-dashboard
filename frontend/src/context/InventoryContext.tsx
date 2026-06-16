@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { CreateProduct, InventoryContext, Product } from "../types/types";
 import { useAuth } from "./AuthContext";
+import { toast } from "sonner";
 
 
 const inventoryContext = createContext<InventoryContext | null>(null)
@@ -8,28 +9,50 @@ const inventoryContext = createContext<InventoryContext | null>(null)
 export default function InventoryProvider( {children}: {children: React.ReactNode}) {
 
     const [inventory, setInventory] = useState<Product[]>([])
-    const { user } = useAuth()
+    const { user, logOut, changeLoading } = useAuth()
     
-    async function loadInventory() {
-        const token = localStorage.getItem("token")
-        const res = await fetch("/api/inventory", {
-            method: "GET",
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        })
-        const data = await res.json()
-        setInventory(data)
-    }
-
     useEffect(() => {
         if(!user) return
 
         loadInventory()
     }, [user])
 
+    async function loadInventory() {
+        changeLoading(true)
+        try {
+            const token = localStorage.getItem("token")
+            if(!token) return
+            const res = await fetch("/api/inventory", {
+                method: "GET",
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            })
+    
+            if (res.status === 401) {
+                localStorage.removeItem("token")
+                logOut()
+                return
+            }
+    
+            const data = await res.json()
+            setInventory(data)
+            changeLoading(false)
+            
+        } catch (error) {
+            
+        } finally {
+            changeLoading(false)
+        }
+        
+    }
+
+
     async function handleTransaction(productId: number, type: string, quantity: number) {
         const token = localStorage.getItem("token")
+
+        if(!token) return
+
         const res = await fetch(`/api/transaction/product/${productId}`, {
             method: "POST",
             headers: {
@@ -38,14 +61,22 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
             },
             body: JSON.stringify({type, quantity})
         })
-        const updatedProduct = await res.json()
-        console.log(updatedProduct);
+        const data = await res.json()
+
+        if(!res.ok) throw new Error(data.message);
         
-        setInventory(prev => prev.map(product => updatedProduct.id === product.id ? updatedProduct : product))
+        if(res.status === 200) {
+            setInventory(prev => prev.map(product => data.product.id === product.id ? data.product : product))
+            toast.success(data.message)
+        }
+        return data
     }
 
     async function createSQLProduct(data: CreateProduct) {
         const token = localStorage.getItem("token")
+
+        if(!token) return
+
         const res = await fetch("/api/product", {
             method: "POST",
             headers: {
@@ -54,23 +85,35 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
             },
             body: JSON.stringify(data)
         })
-
-        if(res.status === 404) return console.log("nem vagyok belépve");
         
-        const product = await res.json()
-        setInventory(prev => [...prev, product])
+        const content = await res.json()
+
+        if(!res.ok) throw new Error(content.message);
+        
+        if(res.status === 201) {
+            setInventory(prev => [...prev, content.product])
+        }
+
+        return content
     }
 
     async function removeProduct(productId: number) {
         const token = localStorage.getItem("token")
+
+        if(!token) return
+
         const res = await fetch(`/api/product/${productId}`, {
             method: "DELETE",
             headers: {
                 authorization: `Bearer ${token}`
             },
         })
+
+        const data = await res.json()
+
         if(res.status === 200) {
             setInventory(prev => prev.filter(product => product.id !== productId))
+            toast.success(data.message)
         }
     }
     

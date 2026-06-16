@@ -6,6 +6,8 @@ import Navbar from "./components/Navbar";
 import { Toaster } from "sonner";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
+import GuestOnly from "./components/GuestOnly";
+import ProtectedUser from "./components/ProtectedUser";
 
 export default function App() {
 
@@ -20,10 +22,10 @@ export default function App() {
       <main className="max-w-screen-2xl mx-auto p-4 md:p-12 animate-in fade-in duration-500">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/display" element={<Display />} />
-          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/signup" element={<GuestOnly><SignUpPage /></GuestOnly>} />
+          <Route path="/signin" element={<GuestOnly><SignInPage /></GuestOnly>} />
+          <Route path="/display" element={<ProtectedUser><Display /></ProtectedUser>} />
+          <Route path="/inventory" element={<ProtectedUser><Inventory /></ProtectedUser>} />
         </Routes>
       </main>
 

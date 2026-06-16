@@ -1,18 +1,39 @@
 import { useState } from "react"
 import { PlusCircle, Tag, DollarSign, Package, ShoppingCart } from "lucide-react"
-import type { CreateProduct } from "../../types/types"
 import { useInventory } from "../../context/InventoryContext"
+import { useAuth } from "../../context/AuthContext"
 
 export default function CreateForm() {
     const [name, setName] = useState<string>("")
     const [costPrice, setCostPrice] = useState<number>(0)
     const [sellingPrice, setSellingPrice] = useState<number>(0)
     const [stock, setStock] = useState<number>(0)
+    const { changeMessage, message, loading, changeLoading } = useAuth()
 
-    const { createSQLProduct } = useInventory()
+    const nameResult = name.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
     
-    function handleSubmit () {
-        createSQLProduct({name, costPrice, sellingPrice, stock})
+    const { createSQLProduct } = useInventory()
+
+    function resetForm() {
+        setName("")
+        setCostPrice(0)
+        setSellingPrice(0)
+        setStock(0)
+    }
+    
+    async function handleSubmit () {
+        changeLoading(true)
+        try {
+            const data = await createSQLProduct({nameResult, costPrice, sellingPrice, stock})
+            changeMessage(data.message)
+            resetForm()
+        } catch (error) {
+            if(error instanceof Error) {
+                changeMessage(error.message)
+            }
+        } finally {
+            changeLoading(false)
+        }
     }
 
 
@@ -71,10 +92,26 @@ export default function CreateForm() {
                 </div>
 
                 <button className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 active:scale-[0.98] transition-all mt-4 shadow-lg shadow-indigo-200" 
-                    type="submit">
+                    type="submit" disabled={loading}>
                     <PlusCircle size={20} />
-                    Add Product
+                    {loading ? (
+                        <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Adding product...</span>
+                        </div>
+                        ) : (
+                        "Add Product"
+                    )}
                 </button>
+                    {message === "You created a product successfully!" ? 
+                        <p className="mt-4 text-sm text-green-600">
+                            {message}
+                        </p>
+                        :
+                        <p className="mt-4 text-sm text-red-600">
+                            {message}
+                        </p>
+                    }
             </form>
         </div>
     )
