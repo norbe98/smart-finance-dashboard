@@ -23,6 +23,12 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
     if(existingUser) return res.status(400).json({ message: "Email already exists!"})
 
+    if(password.length <= 8) return res.status(400).json({ message: "The password has to be longer than 8 character!" })
+
+    const isNumber = password.split("").some((char: string) => !isNaN(Number(char)))
+
+    if(!isNumber) return res.status(400).json({ message: "The password has to contain at least one number!" })
+
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = await prisma.user.create({
@@ -34,7 +40,10 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
     await createDemoData(newUser.id)
 
-    res.status(201).json(newUser.email)
+    res.status(201).json({
+  email: newUser.email,
+  message: "You registered successfully!"
+})
 })
 
 authRouter.post("/signin", async (req: Request, res: Response) => {
@@ -46,11 +55,11 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
         }
     })
 
-    if(!existingUser) return res.status(401).json({ message: "Email doesnt exists!"})
+    if(!existingUser) return res.status(401).json({ message: "Invalid email/password, please try again!" })
 
     const isPasswordValid = await bcrypt.compare(password, existingUser.password)
 
-    if(!isPasswordValid) return res.status(401).json({ message: "Password is not correct!"})
+    if(!isPasswordValid) return res.status(401).json({ message: "Invalid email/password, please try again!" })
 
     const token = jwt.sign({
             id: existingUser.id,

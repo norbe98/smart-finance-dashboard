@@ -10,15 +10,18 @@ export default function authMiddleware(
 
       const authHeader = req.headers.authorization
 
-      if(!authHeader) return res.json({ message: "cannot fin token" })
+      if(!authHeader) return res.status(401).json({ message: "Cannot find token" })
 
-    const token = authHeader.split(" ")[1]
+      const token = authHeader.split(" ")[1]
 
-    if(!token) return res.json({ message: "token has expired" })
+      if(!token) return res.status(401).json({ message: "Invalid authorization format" })
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET!) as JwtUser
-
-    req.user = decode
-
-    next()
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtUser
+        req.user = decoded
+        next()
+        
+      } catch (error) {
+      return res.status(401).json({ message: "Invalid or expired token" })
+  }
 }

@@ -21,7 +21,7 @@ dataBaseRouter.get("/inventory", authMiddleware ,async (req: AuthRequest, res: R
 
 dataBaseRouter.post("/product", authMiddleware, async (req: AuthRequest, res: Response) => {
 
-    const { name, costPrice, sellingPrice, stock } = req.body
+    const { nameResult, costPrice, sellingPrice, stock } = req.body
 
     const existingUser = await prisma.user.findUnique({
         where: { 
@@ -31,10 +31,14 @@ dataBaseRouter.post("/product", authMiddleware, async (req: AuthRequest, res: Re
 
     if(!existingUser) return res.status(404).json({ message: "Not authorized" })
 
+    if(nameResult.length <= 2) return res.status(400).json({ message: "The product name has to include 2 or more characters!" })
+
+    if(costPrice <= 0 || sellingPrice <= 0 || stock <= 0) return res.status(400).json({ message: "The prices and stock cannot be 0 or lower!" })
+
     const existingProduct = await prisma.product.findFirst({
         where: {
             userId: existingUser.id,
-            name: name
+            name: nameResult
         }
     })
 
@@ -42,7 +46,7 @@ dataBaseRouter.post("/product", authMiddleware, async (req: AuthRequest, res: Re
 
     const product = await prisma.product.create({
         data: {
-            name: name,
+            name: nameResult,
             costPrice: costPrice,
             sellPrice: sellingPrice,
             stock: stock,
@@ -58,7 +62,8 @@ dataBaseRouter.post("/product", authMiddleware, async (req: AuthRequest, res: Re
         }
     })
 
-    res.status(200).json({
+    res.status(201).json({
+      product: {
             id: product.id,
             name: product.name,
             costPrice: product.costPrice,
@@ -71,6 +76,8 @@ dataBaseRouter.post("/product", authMiddleware, async (req: AuthRequest, res: Re
                 productId: product.id,
                 date: new Date(transaction.date).toLocaleString("hu-HU")
             }]
+        },
+      message: "You created a product successfully!"
     })
 })
 
@@ -99,13 +106,21 @@ dataBaseRouter.delete("/product/:id", authMiddleware, async (req: AuthRequest, r
             id: productId
         }
     })
-    res.sendStatus(200)
+    res.status(200).json({ message: "You deleted the product successfully!" })
   })
 
 dataBaseRouter.post("/transaction/product/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
   const productId = Number(req.params.id)
   const { quantity, type } = req.body
   const userId = Number(req.user?.id)
+
+  const existingUser = await prisma.user.findUnique({
+    where: { 
+      id: Number(req.user?.id)
+    }
+  })
+
+  if(!existingUser) return res.status(404).json({ message: "Not authorized" })
 
   const existingProduct = await prisma.product.findFirst({
     where: {
@@ -117,6 +132,8 @@ dataBaseRouter.post("/transaction/product/:id", authMiddleware, async (req: Auth
   if (!existingProduct) {
     return res.status(404).json({ message: "Product not found" })
   }
+
+  if(quantity <= 0) return res.status(400).json({ message: "Quantity cannot be 0 or lower!"})
 
   const stockChange =
     type === "bought"
@@ -152,5 +169,8 @@ dataBaseRouter.post("/transaction/product/:id", authMiddleware, async (req: Auth
     }
   })
 
-  res.json(updatedProduct)
+  res.status(200).json({
+    product: updatedProduct,
+    message: "You made a transaction successfully!"
+})
 })
