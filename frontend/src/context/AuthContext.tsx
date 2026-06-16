@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User,  AuthContext, AuthUser } from "../types/types";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const AuthContext = createContext<AuthContext | null>(null)
 
@@ -8,7 +9,7 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
 
     const [user, setUser] = useState<User |null>(null)
     const [message, setMessage] = useState<string>("")
-    const [loading, setLoading] = useState<string>("")
+    const [loading, setLoading] = useState<boolean>(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -16,8 +17,18 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
         setMessage("")
     }, [])
     
+    function changeMessage(message: string) {
+        setMessage(message)
+    }
+
+    function changeLoading(boolean: boolean) {
+        setLoading(boolean)
+    }
+
     async function getMe() {
         const token = localStorage.getItem("token")
+
+        if(!token) return
         
         const res = await fetch("/api/auth/me", {
             method: "GET",
@@ -26,6 +37,12 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
             }
         })
         const user = await res.json()
+
+        if (res.status === 401) {
+            localStorage.removeItem("token")
+            setUser(null)
+            return
+        }
 
         if(user) {
             setUser(user)
@@ -41,42 +58,50 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
             body: JSON.stringify(data)
         })
 
-        if(res.status === 400) return setMessage("Email already exists!")
-        if(res.status === 201) return setMessage("You registered successfully, now you can login.")
+        const content = await res.json()
 
-        const email = await res.json()
-        return email
+        if(!res.ok) {
+            throw new Error(content.message);
+        }
+
+        return content
+
     }
 
     async function signIn(data: AuthUser) {
-                const res = await fetch("/api/auth/signin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            const user = await res.json()
-            
-            if(res.status === 401) return setMessage("Invalid email/password, please try again!")
+        const res = await fetch("/api/auth/signin", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
 
-            if(res.status === 200) {
-                localStorage.setItem("token", user.token)
-                setUser(user.userData)
-                alert("You logged in successfully!")
-                navigate("/")
-                setMessage("")
-            }
+        const user = await res.json()
+            
+        if(!res.ok) {
+            throw new Error(user.message)
+        }
+
+        if(res.status === 200) {
+            localStorage.setItem("token", user.token)
+            setUser(user.userData)
+            navigate("/")
+            alert("You logged in successfully!")
+            setMessage("")
+        }
+        return user
     }
 
     async function logOut() {
         localStorage.removeItem("token")
         setUser(null)
+        toast.success("You logged out successfully!")
         navigate("/")
     }
 
     return (
-        <AuthContext.Provider value={{ user, signUp, signIn, message, logOut }}>
+        <AuthContext.Provider value={{ user, signUp, signIn, message, logOut, changeMessage, loading, changeLoading }}>
             {children}
         </AuthContext.Provider>
     )
