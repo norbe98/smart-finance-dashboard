@@ -133,12 +133,14 @@ dataBaseRouter.post("/transaction/product/:id", authMiddleware, async (req: Auth
     return res.status(404).json({ message: "Product not found" })
   }
 
-  if(quantity <= 0) return res.status(400).json({ message: "Quantity cannot be 0 or lower!"})
+  if(quantity <= 0) return res.status(400).json({ message: "Quantity cannot be 0 or lower!" })
 
   const stockChange =
     type === "bought"
       ? { increment: quantity }
       : { decrement: quantity }
+
+  if(stockChange.decrement > existingProduct.stock) return res.status(400).json({ message: "Quantity cannot be higher than your stock!" })
 
   const product = await prisma.product.update({
     where: {
