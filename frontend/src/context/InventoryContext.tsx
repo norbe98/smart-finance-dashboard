@@ -22,7 +22,7 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
         try {
             const token = localStorage.getItem("token")
             if(!token) return
-            const res = await fetch("/api/inventory", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/inventory`, {
                 method: "GET",
                 headers: {
                     authorization: `Bearer ${token}`
@@ -53,7 +53,7 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
 
         if(!token) return
 
-        const res = await fetch(`/api/transaction/product/${productId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/transaction/product/${productId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
 
         if(!token) return
 
-        const res = await fetch("/api/product", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/product`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -102,7 +102,7 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
 
         if(!token) return
 
-        const res = await fetch(`/api/product/${productId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/product/${productId}`, {
             method: "DELETE",
             headers: {
                 authorization: `Bearer ${token}`

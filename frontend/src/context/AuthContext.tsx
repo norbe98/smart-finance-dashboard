@@ -30,7 +30,7 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
 
         if(!token) return
         
-        const res = await fetch("/api/auth/me", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
             method: "GET",
             headers: {
                 authorization: `Bearer ${token}`
@@ -50,7 +50,7 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
     }
     
     async function signUp(data: AuthUser) {
-        const res = await fetch("/api/auth/signup", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -69,7 +69,7 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
     }
 
     async function signIn(data: AuthUser) {
-        const res = await fetch("/api/auth/signin", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
