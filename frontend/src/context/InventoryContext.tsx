@@ -9,7 +9,7 @@ const inventoryContext = createContext<InventoryContext | null>(null)
 export default function InventoryProvider( {children}: {children: React.ReactNode}) {
 
     const [inventory, setInventory] = useState<Product[]>([])
-    const { user, logOut, changeLoading } = useAuth()
+    const { user, changeLoading, handleExpiredToken } = useAuth()
     
     useEffect(() => {
         if(!user) return
@@ -29,9 +29,8 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
                 }
             })
     
-            if (res.status === 401) {
-                localStorage.removeItem("token")
-                logOut()
+            if(res.status === 401) {
+                handleExpiredToken()
                 return
             }
     
@@ -62,8 +61,14 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
             body: JSON.stringify({type, quantity})
         })
         const data = await res.json()
+        
+        if(res.status === 401) {
+            handleExpiredToken()
+            return
+        }
 
         if(!res.ok) throw new Error(data.message);
+        
         
         if(res.status === 200) {
             setInventory(prev => prev.map(product => data.product.id === product.id ? data.product : product))
@@ -88,6 +93,11 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
         
         const content = await res.json()
 
+        if(res.status === 401) {
+            handleExpiredToken()
+            return
+        }
+
         if(!res.ok) throw new Error(content.message);
         
         if(res.status === 201) {
@@ -110,6 +120,11 @@ export default function InventoryProvider( {children}: {children: React.ReactNod
         })
 
         const data = await res.json()
+
+        if(res.status === 401) {
+            handleExpiredToken()
+            return
+        }
 
         if(res.status === 200) {
             setInventory(prev => prev.filter(product => product.id !== productId))

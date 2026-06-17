@@ -49,7 +49,8 @@ export type AuthContext = {
     logOut: () => void,
     changeMessage: (message: string) => void,
     loading: boolean,
-    changeLoading: (boolean: boolean) => void
+    changeLoading: (boolean: boolean) => void,
+    handleExpiredToken: () => void
 }
 
 export type AuthUser = {

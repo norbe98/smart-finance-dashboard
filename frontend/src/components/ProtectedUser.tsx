@@ -6,7 +6,7 @@ export default function ProtectedUser({children}: {children: React.ReactNode}) {
 
     if(!user) {
         return ( 
-            <Navigate to={"/"} replace />
+            <Navigate to={"/signup"} replace />
         )
     }
     return children

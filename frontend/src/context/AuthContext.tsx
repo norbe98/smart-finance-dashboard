@@ -25,6 +25,13 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
         setLoading(boolean)
     }
 
+    function handleExpiredToken() {
+        localStorage.removeItem("token") 
+        setUser(null) 
+        alert("Your session expired. Please log in again.") 
+        navigate("/")
+    }
+
     async function getMe() {
         const token = localStorage.getItem("token")
 
@@ -39,8 +46,7 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
         const user = await res.json()
 
         if (res.status === 401) {
-            localStorage.removeItem("token")
-            setUser(null)
+            handleExpiredToken()
             return
         }
 
@@ -97,11 +103,10 @@ export default function AuthProvider({children}: {children: React.ReactNode}) {
         localStorage.removeItem("token")
         setUser(null)
         toast.success("You logged out successfully!")
-        navigate("/")
     }
 
     return (
-        <AuthContext.Provider value={{ user, signUp, signIn, message, logOut, changeMessage, loading, changeLoading }}>
+        <AuthContext.Provider value={{ user, signUp, signIn, message, logOut, changeMessage, loading, changeLoading, handleExpiredToken }}>
             {children}
         </AuthContext.Provider>
     )
