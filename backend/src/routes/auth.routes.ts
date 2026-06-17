@@ -67,7 +67,7 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
         },
         process.env.JWT_SECRET!,
         {
-            expiresIn: "1m"
+            expiresIn: "5m"
         }
     )
 
