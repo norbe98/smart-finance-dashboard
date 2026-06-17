@@ -5,43 +5,72 @@
 * **https://inventio-finance-dashboard.netlify.app/**
 
 
-A modern, responsive React-based inventory management and sales tracking application. Built with TypeScript and Tailwind CSS, this tool allows users to track product stocks, manage transactions, and visualize financial performance through an intuitive dashboard.
+Inventory & Sales Tracker is a full-stack inventory management application built with React, TypeScript, Node.js, Express, PostgreSQL and Prisma. Users can securely manage products, record transactions and monitor business performance through an interactive dashboard.
 
-## 🚀 Key Features
+## Key Features
 
-* **Dynamic Inventory Management:** Create and delete products with automatic duplicate checking.
-* **Real-time Stock Control:** Dedicated "Buy" and "Sell" logic that updates inventory levels instantly.
-* **Responsive KPI Dashboard:** Track Total Spent, Total Income, Stock Value, and Net Profit. Optimized for all screen sizes (including iPhone-specific layout fixes).
-* **Data Visualization:** Interactive charts (Stock distribution, Income/Spent trends) powered by Recharts.
-* **Data Persistence:** Your inventory and transactions are saved locally in the browser, ensuring data stays safe even after a page refresh.
-* **Transaction Logging:** Detailed history of every stock movement with timestamps.
+* User authentication with JWT
+* Product management (create and delete products)
+* Duplicate product prevention
+* Buy and sell transactions with automatic stock updates
+* KPI dashboard (Income, Expenses, Stock Value, Profit)
+* Responsive design for desktop and mobile devices
+* User-specific data isolation
+* Interactive charts powered by Recharts
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-* **Frontend:** React 18 (TypeScript)
-* **Routing:** React Router 6 (SPA navigation)
-* **Styling:** Tailwind CSS (Mobile-first, responsive design)
-* **Charts:** Recharts (Interactive data visualization)
-* **Icons:** Lucide-react
-* **Notifications:** Sonner (Toast alerts for transactions/inventory)
-* **State Management:** React Context API + **LocalStorage persistence**
-* **Testing:** Vitest + jsdom
-* **Build Tool:** Vite
+* **Frontend:**
+        React 18
+        TypeScript
+        React Router
+        Tailwind CSS
+        Recharts
+        Sonner
+        Context API
+        Vite
 
-## 📦 Installation & Setup
+* **Backend:**
+        Node.js
+        Express
+        TypeScript
+        Prisma ORM
+        PostgreSQL
+        JWT Authentication
+        bcrypt
+
+* **Database:**
+        PostgreSQL
+
+## Installation & Setup
 
 1.  **Clone the repository:**
-    ```bash
+
     git clone https://github.com/norbe98/smart-finance-dashboard.git
-    ```
+
 2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Start the development server:**
-    ```bash
-    npm run dev
-    ```
+        Frontend
+
+        cd frontend
+        npm install
+        npm run dev
+
+        Backend
+
+        cd backend
+        npm install
+        npm run dev
+
+## Environment Variables
+        Backend (.env)
+
+        DATABASE_URL=your_database_url
+        JWT_SECRET=your_secret_key
+        PORT=3000
+        
+        Frontend (.env)
+        
+        VITE_API_URL=http://localhost:3000
 
 ## 💡 Usage
 
@@ -54,6 +83,6 @@ A modern, responsive React-based inventory management and sales tracking applica
 The project uses **Vitest** for unit testing critical utility functions (e.g., text formatting, input validation).
 
 To run the tests:
-```bash
+
 npm test
 
